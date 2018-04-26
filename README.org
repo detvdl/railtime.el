@@ -1,0 +1,22 @@
+* Railtime.el - Belgian Railtime info in Emacs
+*DISCLAIMER:* This is currently a personal project that I will not be maintaining on a regular basis.
+
+** Usage
+1. Make sure your Emacs configuration has all of this package's dependencies installed.
+   =json.el=, =mm-uu.el= and =url.el= should come with any recent Emacs version.
+   =bui.el= can be installed with =M-x package-install bui=
+2. Put =railtime.el= somewhere in your load-path
+3. Run the following lines of code in your =*Scratch*=-buffer
+#+BEGIN_SRC emacs-lisp
+(require 'railtime)
+(setq rt--default-connection-from "Brussels"
+      rt--default-connection-to "Antwerp"
+      rt--default-language 'en ;; choice from '(nl en de fr)
+)
+(rt-connections)
+#+END_SRC
+   You will be prompted for a =from= station, a =to= station, whether you're seaching on =departure= or =arrival= times, a =time= string and a =date=.
+   The stations will be pre-filled with the placeholder default value if you defined it with the above =setq= commands.
+
+** Todo
+A lot
