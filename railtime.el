@@ -188,9 +188,14 @@ Optionally set DEFAULT-NOW for the default time-string to be the current time."
     time))
 
 (defun rt--completing-read-alist (prompt collection &rest args)
-  (let* ((input (apply 'completing-read prompt collection args))
-         (val (assoc input collection)))
-    (if val (cdr val) input)))
+  (let* ((coll (mapc (lambda (el)
+                       (if (and (consp el) (cdr el))
+                           (setf (car el)
+                                 (propertize (format "%s" (car el)) :values (cdr el)))
+                         el))
+                     collection))
+         (input (apply 'completing-read prompt coll args)))
+    (or (get-text-property 0 :values input) input)))
 
 (defun rt--mapcar* (f &rest xs)
   "MAPCAR for multiple sequences"
