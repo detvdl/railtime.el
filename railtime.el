@@ -134,7 +134,7 @@ retained if there's no element with the same car in OTHER."
 (defun rt--request-stations (&optional from-cache)
   "Request the current stations list, optionally FROM-CACHE can be set.
 Caching is recommended since the station list is unlikely to change during the same session (or ever)."
-  (when (not (and from-cache (boundp 'rt--cached-stations)))
+  (when (not (and from-cache (bound-and-true-p rt--cached-stations)))
     (setq rt--cached-stations
           (alist-get 'station (rt--request-endpoint 'stations nil '(("lang" . rt--default-language))))))
   rt--cached-stations)
@@ -237,11 +237,8 @@ Optionally set DEFAULT-NOW for the default time-string to be the current time."
                               (when delay (rt--format-delay-string delay)))))
 
 (defun rt--format-alerts (alerts entry)
-  (let ((alert-count 0))
-    (dolist (alert alerts)
-      (let ((num (alist-get 'number alert)))
-        (when num (setq alert-count (+ alert-count (string-to-number num))))))
-    (if (> alert-count 0)
+  (let ((alert-count (string-to-number (or (alist-get 'number alerts) "0"))))
+    (if (and alert-count (> alert-count 0))
         (format "%s %s" (propertize "⚠" 'font-lock-face 'rt--status-warning-face) alert-count)
       (propertize "✓" 'font-lock-face 'rt--status-good-face))))
 
