@@ -18,6 +18,7 @@
 (require 'url)
 
 ;; Constants
+
 (defconst rt--api-base-uri "https://api.irail.be")
 (defconst rt--default-headers '(("Accept" . "application/json")))
 (defconst rt--default-parameters '(("format" . "json")))
@@ -37,6 +38,7 @@
 (defcustom rt--default-language 'en
   "Default language for API requests."
   :type 'symbol
+  :options '(de en fr nl)
   :group 'railtime)
 
 (defcustom rt--default-connection-from nil
@@ -166,7 +168,7 @@ Caching is recommended since the station list is unlikely to change during the s
 
 ;;;  Connections
 
-(defun rt--read-time-input (&optional identifier default-now)
+(defun rt--prompt-time (&optional identifier default-now)
   "Read a time string from the minibuffer using `completing-read'.
 Optionally provide an IDENTIFIER that prefixes the prompt.
 Optionally set DEFAULT-NOW for the default time-string to be the current time."
@@ -188,6 +190,10 @@ Optionally set DEFAULT-NOW for the default time-string to be the current time."
     time))
 
 (defun rt--completing-read-alist (prompt collection &rest args)
+  "Completing read function that works with alists.
+Takes the default `completing-read' arguments PROMPT and COLLECTION,
+alongside all the optional arguments collected in ARGS.
+Returns the CDR if the selected item is a cons cell, else it returns the stringified item."
   (let* ((coll (mapc (lambda (el)
                        (if (and (consp el) (cdr el))
                            (setf (car el)
@@ -219,7 +225,7 @@ Optionally set DEFAULT-NOW for the default time-string to be the current time."
          (to (or to (completing-read "To: " station-names nil t rt--default-connection-to)))
          (timesel (or timesel (completing-read "Choose: " '(departure arrival) nil t)))
          (date (or date (rt--prompt-date)))
-         (time (or time (rt--read-time-input timesel t)))
+         (time (or time (rt--prompt-time timesel t)))
          (parameters `(("from" . ,from) ("to" . ,to) ("timesel" . ,timesel)
                        ("typeOfTransport" . ,type) ("date" . ,date) ("time" . ,time))))
     (alist-get 'connection (rt--request-endpoint 'connections nil parameters))))
