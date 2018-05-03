@@ -239,8 +239,8 @@ Returns the CDR if the selected item is a cons cell, else it returns the stringi
 (defun rt--format-deparr-time (time &optional delay)
   (concat (format-time-string "%H:%M" (if (numberp time)
                                           time
-                                        (string-to-number time))
-                              (when delay (rt--format-delay-string delay)))))
+                                        (string-to-number time)))
+          (when delay (rt--format-delay-string delay))))
 
 (defun rt--format-alerts (alerts entry)
   (let ((alert-count (string-to-number (or (alist-get 'number alerts) "0"))))
